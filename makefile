@@ -3,7 +3,7 @@ SHELL_PATH = /bin/ash
 SHELL = $(if $(wildcard $(SHELL_PATH)),/bin/ash,/bin/bash)
 
 # ==============================================================================
-#
+# CLASS NOTES
 #
 # RSA Keys
 # 	To generate a private/public key PEM file.
@@ -84,6 +84,9 @@ dev-up:
 
 	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
 
+	docker pull $(POSTGRES)
+	kind load docker-image $(POSTGRES) --name $(KIND_CLUSTER)
+
 dev-down:
 	kind delete cluster --name $(KIND_CLUSTER)
 
@@ -93,6 +96,9 @@ dev-load:
 	kind load docker-image $(SERVICE_IMAGE) --name $(KIND_CLUSTER)
 
 dev-apply:
+	kustomize build zarf/k8s/dev/database | kubectl apply -f -
+	kubectl rollout status --namespace=$(NAMESPACE) --watch --timeout=120s sts/database
+
 	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
 	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(APP) --timeout=120s --for=condition=Ready
 
@@ -113,6 +119,15 @@ dev-describe-deployment:
 
 dev-describe-sales:
 	kubectl describe pod --namespace=$(NAMESPACE) -l app=$(APP)
+
+dev-logs-db:
+	kubectl logs --namespace=$(NAMESPACE) -l app=database --all-containers=true -f --tail=100
+
+dev-logs-init:
+	kubectl logs --namespace=$(NAMESPACE) -l app=$(APP) -f --tail=100 -c init-migrate
+
+pgcli:
+	pgcli postgresql://postgres:postgres@localhost
 
 # ------------------------------------------------------------------------------
 

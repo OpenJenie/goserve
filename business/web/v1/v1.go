@@ -3,6 +3,7 @@ package v1
 import (
 	"os"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/standard-librarian/gosale/business/web/v1/auth"
 	"github.com/standard-librarian/gosale/business/web/v1/mid"
 	"github.com/standard-librarian/gosale/foundation/logger"
@@ -15,6 +16,7 @@ type APIMuxConfig struct {
 	Shutdown chan os.Signal
 	Log      *logger.Logger
 	Auth     *auth.Auth
+	DB       *sqlx.DB
 }
 
 // RouteAdder defines behavior that sets the routes to bind for an instance
