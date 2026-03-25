@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contribution Guide
+    url: https://github.com/OpenJenie/goserve/blob/main/CONTRIBUTING.md
+    about: Read the contribution workflow before opening an issue or pull request.
+  - name: Good First Issues
+    url: https://github.com/OpenJenie/goserve/blob/main/docs/good-first-issues.md
+    about: Start here if you want a small, contributor-friendly task.

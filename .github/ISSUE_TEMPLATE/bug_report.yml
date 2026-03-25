@@ -1,0 +1,44 @@
+name: Bug Report
+description: Report a reproducible problem in the GoServe foundation.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please include enough detail for someone else to reproduce the problem locally.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction Steps
+      description: Exact commands, routes, or code paths to reproduce the issue.
+      placeholder: |
+        1. Run ...
+        2. Call ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Environment
+      description: Go version, OS, and any relevant local setup.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Context
+      description: Logs, snippets, or links if relevant.
