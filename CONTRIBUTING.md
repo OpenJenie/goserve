@@ -10,7 +10,7 @@ GoServe is intentionally a small foundation repository. Contributions are welcom
 ## Good First Steps
 
 1. Read [README.md](/Users/admin/Projects/opensource/org/goserve/README.md).
-2. Read [docs/good-first-issues.md](/Users/admin/Projects/opensource/org/goserve/docs/good-first-issues.md).
+2. Browse the repository's GitHub issues and start with anything labeled `good first issue`.
 3. Set up local keys with `make keys`.
 4. Run validation with `go test ./...` and `go build ./...`.
 5. Pick one focused change.
@@ -80,4 +80,4 @@ Small PRs are much easier to review and merge than broad refactors.
 
 ## Issue Selection
 
-If you are new to the repo, start with one item from [docs/good-first-issues.md](/Users/admin/Projects/opensource/org/goserve/docs/good-first-issues.md). Those are intentionally scoped so contributors can learn the codebase without pushing product logic into the starter.
+If you are new to the repo, start with an issue labeled `good first issue`. Those should stay intentionally scoped so contributors can learn the codebase without pushing product logic into the starter.
