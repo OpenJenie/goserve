@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	metrics "github.com/standard-librarian/gosale/business/web/v1/mertrics"
-	"github.com/standard-librarian/gosale/foundation/web"
+	metrics "github.com/OpenJenie/goserve/business/web/v1/mertrics"
+	"github.com/OpenJenie/goserve/foundation/web"
 )
 
 // Metrics updates program counters.

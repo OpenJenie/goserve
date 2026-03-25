@@ -12,14 +12,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/OpenJenie/goserve/app/services/sales-api/v1/handlers"
+	v1 "github.com/OpenJenie/goserve/business/web/v1"
+	"github.com/OpenJenie/goserve/business/web/v1/auth"
+	"github.com/OpenJenie/goserve/business/web/v1/debug"
+	"github.com/OpenJenie/goserve/foundation/keystore"
+	"github.com/OpenJenie/goserve/foundation/logger"
+	"github.com/OpenJenie/goserve/foundation/web"
 	"github.com/ardanlabs/conf/v3"
-	"github.com/standard-librarian/gosale/app/services/sales-api/v1/handlers"
-	v1 "github.com/standard-librarian/gosale/business/web/v1"
-	"github.com/standard-librarian/gosale/business/web/v1/auth"
-	"github.com/standard-librarian/gosale/business/web/v1/debug"
-	"github.com/standard-librarian/gosale/foundation/keystore"
-	"github.com/standard-librarian/gosale/foundation/logger"
-	"github.com/standard-librarian/gosale/foundation/web"
 )
 
 var build = "develop"
@@ -37,7 +37,7 @@ func main() {
 		return web.GetTraceID(ctx)
 	}
 
-	log = logger.NewWithEvents(os.Stdout, logger.LevelInfo, "SALES-API", traceIDFunc, events)
+	log = logger.NewWithEvents(os.Stdout, logger.LevelInfo, "GOSERVE-API", traceIDFunc, events)
 
 	// -------------------------------------------------------------------------
 
@@ -70,18 +70,17 @@ func run(ctx context.Context, log *logger.Logger) error {
 			DebugHost       string        `conf:"default:0.0.0.0:4000"`
 		}
 		Auth struct {
-			KeysFolder string `conf:"default:zarf/keys/"`
-			ActiveKID  string `conf:"default:54bb2165-71e1-41a6-af3e-7da4a0e1e2c1"`
+			KeysFolder string `conf:"default:.local/keys/"`
 			Issuer     string `conf:"default:service project"`
 		}
 	}{
 		Version: conf.Version{
 			Build: build,
-			Desc:  "BILL KENNEDY",
+			Desc:  "GoServe",
 		},
 	}
 
-	const prefix = "SALES"
+	const prefix = "GOSERVE"
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
 		if errors.Is(err, conf.ErrHelpWanted) {
@@ -119,6 +118,7 @@ func run(ctx context.Context, log *logger.Logger) error {
 	authCfg := auth.Config{
 		Log:       log,
 		KeyLookup: ks,
+		Issuer:    cfg.Auth.Issuer,
 	}
 
 	auth, err := auth.New(authCfg)

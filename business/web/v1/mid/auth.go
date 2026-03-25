@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/standard-librarian/gosale/business/web/v1/auth"
-	"github.com/standard-librarian/gosale/business/web/v1/response"
-	"github.com/standard-librarian/gosale/foundation/web"
+	"github.com/OpenJenie/goserve/business/web/v1/auth"
+	"github.com/OpenJenie/goserve/business/web/v1/response"
+	"github.com/OpenJenie/goserve/foundation/web"
 
 	"github.com/google/uuid"
 )
@@ -23,7 +23,7 @@ func Authenticate(a *auth.Auth) web.Middleware {
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 			claims, err := a.Authenticate(ctx, r.Header.Get("authorization"))
 			if err != nil {
-				return auth.NewAuthError("authenticate: failed: %s", err)
+				return auth.NewAuthErrorWithStatus(http.StatusUnauthorized, "authenticate: failed: %s", err)
 			}
 
 			ctx = auth.SetClaims(ctx, claims)
@@ -44,7 +44,7 @@ func Authorize(a *auth.Auth, rule string) web.Middleware {
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 			claims := auth.GetClaims(ctx)
 			if claims.Subject == "" {
-				return auth.NewAuthError("authorize: you are not authorized for that action, no claims")
+				return auth.NewAuthErrorWithStatus(http.StatusUnauthorized, "authorize: you are not authorized for that action, no claims")
 			}
 
 			// I will use an zero valued user id if it doesn't exsit.
@@ -60,7 +60,7 @@ func Authorize(a *auth.Auth, rule string) web.Middleware {
 			}
 
 			if err := a.Authorize(ctx, claims, userID, rule); err != nil {
-				return auth.NewAuthError("authorize: you are not authorized for that action, claims[%v] rule[%v]: %s", claims.Roles, rule, err)
+				return auth.NewAuthErrorWithStatus(http.StatusForbidden, "authorize: you are not authorized for that action, claims[%v] rule[%v]: %s", claims.Roles, rule, err)
 			}
 
 			return handler(ctx, w, r)

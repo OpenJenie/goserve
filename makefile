@@ -16,17 +16,23 @@ run:
 run-help:
 	go run app/services/sales-api/main.go --help | go run app/tooling/logfmt/main.go
 
+keys:
+	@go run app/tooling/sales-admin/main.go -action generate-keys
+
+token:
+	@go run app/tooling/sales-admin/main.go -action generate-token
+
 curl:
-	curl -il http://localhost:3000/v1/hack
+	curl -il http://localhost:3000/v1/example
 
 curl-auth:
-	curl -il -H "Authorization: Bearer ${TOKEN}" http://localhost:3000/v1/hackauth
+	curl -il -H "Authorization: Bearer ${TOKEN}" http://localhost:3000/v1/exampleauth
 
 load:
-	hey -m GET -c 100 -n 100000 "http://localhost:3000/v1/hack"
+	hey -m GET -c 100 -n 100000 "http://localhost:3000/v1/example"
 
 admin:
-	go run app/tooling/sales-admin/main.go
+	@go run app/tooling/sales-admin/main.go -action generate-token
 
 ready:
 	curl -il http://localhost:3000/v1/readiness
@@ -49,10 +55,10 @@ TEMPO           := grafana/tempo:2.2.0
 LOKI            := grafana/loki:2.9.0
 PROMTAIL        := grafana/promtail:2.9.0
 
-KIND_CLUSTER    := gosale-starter-cluster
-NAMESPACE       := sales-system
-APP             := sales
-BASE_IMAGE_NAME := standard-librarian/gosale
+KIND_CLUSTER    := goserve-starter-cluster
+NAMESPACE       := goserve-system
+APP             := goserve
+BASE_IMAGE_NAME := openjenie/goserve
 SERVICE_NAME    := sales-api
 VERSION         := 0.0.1
 SERVICE_IMAGE   := $(BASE_IMAGE_NAME)/$(SERVICE_NAME):$(VERSION)

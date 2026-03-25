@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/standard-librarian/gosale/foundation/logger"
-	"github.com/standard-librarian/gosale/foundation/web"
+	"github.com/OpenJenie/goserve/foundation/logger"
+	"github.com/OpenJenie/goserve/foundation/web"
 )
 
 func Logger(log *logger.Logger) web.Middleware {

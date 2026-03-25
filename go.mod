@@ -1,4 +1,4 @@
-module github.com/standard-librarian/gosale
+module github.com/OpenJenie/goserve
 
 go 1.25.5
 

@@ -3,8 +3,8 @@ package checkgrp
 import (
 	"net/http"
 
-	"github.com/standard-librarian/gosale/foundation/logger"
-	"github.com/standard-librarian/gosale/foundation/web"
+	"github.com/OpenJenie/goserve/foundation/logger"
+	"github.com/OpenJenie/goserve/foundation/web"
 )
 
 // Config contains all the mandatory systems required by handlers.

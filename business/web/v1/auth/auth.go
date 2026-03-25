@@ -10,10 +10,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/OpenJenie/goserve/foundation/logger"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"github.com/open-policy-agent/opa/v1/rego"
-	"github.com/standard-librarian/gosale/foundation/logger"
 )
 
 // ErrForbidden is returned when a auth issue is identified.

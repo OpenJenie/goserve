@@ -5,8 +5,8 @@ import (
 	"net/mail"
 	"time"
 
+	"github.com/OpenJenie/goserve/foundation/validate"
 	"github.com/google/uuid"
-	"github.com/standard-librarian/gosale/foundation/validate"
 )
 
 // QueryFilter holds the available fields a query can be filtered on.

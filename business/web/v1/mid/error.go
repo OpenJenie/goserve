@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/standard-librarian/gosale/business/web/v1/auth"
-	"github.com/standard-librarian/gosale/business/web/v1/response"
-	"github.com/standard-librarian/gosale/foundation/logger"
-	"github.com/standard-librarian/gosale/foundation/validate"
-	"github.com/standard-librarian/gosale/foundation/web"
+	"github.com/OpenJenie/goserve/business/web/v1/auth"
+	"github.com/OpenJenie/goserve/business/web/v1/response"
+	"github.com/OpenJenie/goserve/foundation/logger"
+	"github.com/OpenJenie/goserve/foundation/validate"
+	"github.com/OpenJenie/goserve/foundation/web"
 )
 
 // Errors handles errors coming out of the call chain. It detects normal
@@ -43,10 +43,14 @@ func Errors(log *logger.Logger) web.Middleware {
 					status = reqErr.Status
 
 				case auth.IsAuthError(err):
-					er = response.ErrorDocument{
-						Error: http.StatusText(http.StatusUnauthorized),
-					}
+					authErr := auth.GetAuthError(err)
 					status = http.StatusUnauthorized
+					if authErr != nil && authErr.Status() != 0 {
+						status = authErr.Status()
+					}
+					er = response.ErrorDocument{
+						Error: http.StatusText(status),
+					}
 
 				default:
 					er = response.ErrorDocument{

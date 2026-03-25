@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/standard-librarian/gosale/foundation/validate"
+	"github.com/OpenJenie/goserve/foundation/validate"
 )
 
 // Set of directions for data ordering.

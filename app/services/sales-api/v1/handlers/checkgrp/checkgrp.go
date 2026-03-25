@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/standard-librarian/gosale/foundation/logger"
-	"github.com/standard-librarian/gosale/foundation/web"
+	"github.com/OpenJenie/goserve/foundation/logger"
+	"github.com/OpenJenie/goserve/foundation/web"
 )
 
 // Handlers manages the set of check endpoints.
@@ -23,9 +23,7 @@ func New(build string, log *logger.Logger) *Handlers {
 	}
 }
 
-// Readiness checks if the database is ready and if not will return a 500 status.
-// Do not respond by just returning an error because further up in the call
-// stack it will interpret that as a non-trusted error.
+// Readiness reports whether the service has completed startup successfully.
 func (h *Handlers) Readiness(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	status := "ok"
 	statusCode := http.StatusOK
@@ -72,8 +70,6 @@ func (h *Handlers) Liveness(ctx context.Context, w http.ResponseWriter, r *http.
 	}
 
 	h.log.Info(ctx, "liveness", "status", "OK")
-
-	// This handler provides a free timer loop.
 
 	return web.Respond(ctx, w, data, http.StatusOK)
 }

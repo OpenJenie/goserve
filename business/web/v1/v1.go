@@ -3,10 +3,10 @@ package v1
 import (
 	"os"
 
-	"github.com/standard-librarian/gosale/business/web/v1/auth"
-	"github.com/standard-librarian/gosale/business/web/v1/mid"
-	"github.com/standard-librarian/gosale/foundation/logger"
-	"github.com/standard-librarian/gosale/foundation/web"
+	"github.com/OpenJenie/goserve/business/web/v1/auth"
+	"github.com/OpenJenie/goserve/business/web/v1/mid"
+	"github.com/OpenJenie/goserve/foundation/logger"
+	"github.com/OpenJenie/goserve/foundation/web"
 )
 
 // APIMuxConfig contains all the mandatory systems required by handlers.

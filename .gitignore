@@ -26,6 +26,10 @@ go.work.sum
 
 # env file
 .env
+.local/
+private.pem
+public.pem
+zarf/keys/*.pem
 
 # Editor/IDE
 # .idea/

@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/mail"
 
+	"github.com/OpenJenie/goserve/business/data/order"
+	"github.com/OpenJenie/goserve/foundation/logger"
 	"github.com/google/uuid"
-	"github.com/standard-librarian/gosale/business/data/order"
-	"github.com/standard-librarian/gosale/foundation/logger"
 )
 
 // Storer interface declares the behavior this package needs to perists and
