@@ -2,11 +2,6 @@ package mid_test
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
-	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -15,6 +10,7 @@ import (
 
 	"github.com/OpenJenie/goserve/business/web/v1/auth"
 	"github.com/OpenJenie/goserve/business/web/v1/mid"
+	"github.com/OpenJenie/goserve/foundation/keystore"
 	"github.com/OpenJenie/goserve/foundation/logger"
 	"github.com/OpenJenie/goserve/foundation/web"
 	"github.com/golang-jwt/jwt/v4"
@@ -63,12 +59,10 @@ func TestAuthenticate(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			if err := handler(context.Background(), w, r); err != nil {
-				t.Fatalf("handler: %s", err)
+				t.Fatalf("unexpected handler error: %s", err)
 			}
 
-			if w.Code != http.StatusOK {
-				t.Errorf("got status %d, want %d", w.Code, http.StatusOK)
-			}
+			assertResponse(t, w, http.StatusOK, `"OK"`)
 		})
 
 		t.Run("unauthorized-missing-header", func(t *testing.T) {
@@ -76,12 +70,10 @@ func TestAuthenticate(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			if err := handler(context.Background(), w, r); err != nil {
-				t.Fatalf("handler: %s", err)
+				t.Fatalf("unexpected handler error: %s", err)
 			}
 
-			if w.Code != http.StatusUnauthorized {
-				t.Errorf("got status %d, want %d", w.Code, http.StatusUnauthorized)
-			}
+			assertResponse(t, w, http.StatusUnauthorized, `{"error":"Unauthorized"}`)
 		})
 
 		t.Run("unauthorized-empty-bearer", func(t *testing.T) {
@@ -90,12 +82,10 @@ func TestAuthenticate(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			if err := handler(context.Background(), w, r); err != nil {
-				t.Fatalf("handler: %s", err)
+				t.Fatalf("unexpected handler error: %s", err)
 			}
 
-			if w.Code != http.StatusUnauthorized {
-				t.Errorf("got status %d, want %d", w.Code, http.StatusUnauthorized)
-			}
+			assertResponse(t, w, http.StatusUnauthorized, `{"error":"Unauthorized"}`)
 		})
 
 		t.Run("unauthorized-bad-token", func(t *testing.T) {
@@ -104,12 +94,10 @@ func TestAuthenticate(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			if err := handler(context.Background(), w, r); err != nil {
-				t.Fatalf("handler: %s", err)
+				t.Fatalf("unexpected handler error: %s", err)
 			}
 
-			if w.Code != http.StatusUnauthorized {
-				t.Errorf("got status %d, want %d", w.Code, http.StatusUnauthorized)
-			}
+			assertResponse(t, w, http.StatusUnauthorized, `{"error":"Unauthorized"}`)
 		})
 	}
 
@@ -159,12 +147,10 @@ func TestAuthorize(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			if err := handler(context.Background(), w, r); err != nil {
-				t.Fatalf("handler: %s", err)
+				t.Fatalf("unexpected handler error: %s", err)
 			}
 
-			if w.Code != http.StatusOK {
-				t.Errorf("got status %d, want %d", w.Code, http.StatusOK)
-			}
+			assertResponse(t, w, http.StatusOK, `"OK"`)
 		})
 
 		t.Run("forbidden", func(t *testing.T) {
@@ -188,12 +174,10 @@ func TestAuthorize(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			if err := handler(context.Background(), w, r); err != nil {
-				t.Fatalf("handler: %s", err)
+				t.Fatalf("unexpected handler error: %s", err)
 			}
 
-			if w.Code != http.StatusForbidden {
-				t.Errorf("got status %d, want %d", w.Code, http.StatusForbidden)
-			}
+			assertResponse(t, w, http.StatusForbidden, `{"error":"Forbidden"}`)
 		})
 	}
 
@@ -203,54 +187,35 @@ func TestAuthorize(t *testing.T) {
 // =============================================================================
 
 func testKeyStore(t *testing.T) (auth.KeyLookup, string) {
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	t.Helper()
+
+	privatePEM, _, err := keystore.GenerateRSAKeyPair(2048)
 	if err != nil {
-		t.Fatalf("generating key: %v", err)
+		t.Fatalf("generate key pair: %v", err)
 	}
 
-	privateBlock := &pem.Block{
-		Type:  "PRIVATE KEY",
-		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
-	}
-	privatePEM := string(pem.EncodeToMemory(privateBlock))
-
-	asn1Bytes, err := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privatePEM)
 	if err != nil {
-		t.Fatalf("marshaling public key: %v", err)
+		t.Fatalf("parse private key: %v", err)
 	}
-	publicBlock := &pem.Block{
-		Type:  "PUBLIC KEY",
-		Bytes: asn1Bytes,
-	}
-	publicPEM := string(pem.EncodeToMemory(publicBlock))
 
-	kid := "54bb2165-71e1-41a6-af3e-7da4a0e1e2c1"
-	ks := &simpleKeyStore{
-		store: map[string]string{
-			kid: privatePEM,
+	const kid = "test-kid"
+	return keystore.NewMap(map[string]keystore.PrivateKey{
+		kid: {
+			PK:  privateKey,
+			PEM: privatePEM,
 		},
-		pubStore: map[string]string{
-			kid: publicPEM,
-		},
-	}
-	return ks, kid
+	}), kid
 }
 
-type simpleKeyStore struct {
-	store    map[string]string
-	pubStore map[string]string
-}
+func assertResponse(t *testing.T, w *httptest.ResponseRecorder, wantStatus int, wantBody string) {
+	t.Helper()
 
-func (ks *simpleKeyStore) PrivateKey(kid string) (string, error) {
-	if pem, ok := ks.store[kid]; ok {
-		return pem, nil
+	if w.Code != wantStatus {
+		t.Fatalf("got status %d, want %d", w.Code, wantStatus)
 	}
-	return "", errors.New("not found")
-}
 
-func (ks *simpleKeyStore) PublicKey(kid string) (string, error) {
-	if pem, ok := ks.pubStore[kid]; ok {
-		return pem, nil
+	if got := w.Body.String(); got != wantBody {
+		t.Fatalf("got body %q, want %q", got, wantBody)
 	}
-	return "", errors.New("not found")
 }
