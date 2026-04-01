@@ -9,7 +9,7 @@ GoServe is intentionally a small foundation repository. Contributions are welcom
 
 ## Good First Steps
 
-1. Read [README.md](/Users/admin/Projects/opensource/org/goserve/README.md).
+1. Read [README.md](README.md).
 2. Browse the repository's GitHub issues and start with anything labeled `good first issue`.
 3. Set up local keys with `make keys`.
 4. Run validation with `go test ./...` and `go build ./...`.

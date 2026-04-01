@@ -2,7 +2,8 @@
 
 GoServe is a shareable Go service starter for building authenticated HTTP APIs with a small, explicit architecture. It is intentionally a starter, not a finished product: the repo gives you the service skeleton, middleware stack, auth wiring, local key workflow, and deployment base so new feature work can happen outside the foundation.
 
-Contributor onboarding starts in [CONTRIBUTING.md](/Users/admin/Projects/opensource/org/goserve/CONTRIBUTING.md). Starter-friendly tasks should live in GitHub Issues under the `good first issue` label.
+Contributor onboarding starts in [CONTRIBUTING.md](CONTRIBUTING.md). Starter-friendly
+tasks should live in GitHub Issues under the `good first issue` label.
 
 ## What Exists Today
 
@@ -105,7 +106,7 @@ go build ./...
 
 ## Contributing
 
-- Read [CONTRIBUTING.md](/Users/admin/Projects/opensource/org/goserve/CONTRIBUTING.md) for workflow and scope expectations.
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) for workflow and scope expectations.
 - Start with GitHub issues labeled `good first issue` if you want a small, low-risk contribution.
 
 ## Deployment Notes
