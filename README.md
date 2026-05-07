@@ -66,6 +66,29 @@ TOKEN="$(make token)"
 make curl-auth TOKEN="$TOKEN"
 ```
 
+## Request Trace IDs
+
+Every HTTP request receives a generated trace ID when it enters the service.
+The request-scoped logger writes that value as `trace_id` on structured log
+records so the start, completion, and any handler logs for the same request can
+be correlated.
+
+When you run the service with `make run`, JSON logs are piped through the local
+log formatter. In the formatted output, the trace ID appears after the log
+level and before the message:
+
+```text
+GOSERVE-API: 2026-05-07T10:15:30.123456Z: logger.go:58: INFO: 8f59e7c7-63d5-48fd-9a0e-9a17a12d6b6d: request started: method[GET]: path[/v1/example]
+GOSERVE-API: 2026-05-07T10:15:30.124012Z: logger.go:58: INFO: 8f59e7c7-63d5-48fd-9a0e-9a17a12d6b6d: request completed: method[GET]: path[/v1/example]: statuscode[200]
+```
+
+If you read the raw structured logs directly, the same value is available as
+the `trace_id` field:
+
+```json
+{"time":"2026-05-07T10:15:30.123456Z","level":"INFO","msg":"request started","service":"GOSERVE-API","trace_id":"8f59e7c7-63d5-48fd-9a0e-9a17a12d6b6d","method":"GET","path":"/v1/example"}
+```
+
 ## Starter Routes
 
 - `GET /v1/readiness`
